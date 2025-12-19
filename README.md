@@ -177,6 +177,4 @@ curl -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:8000/api/bookings/"
 curl -H "Authorization: Bearer $ADMIN_TOKEN" "http://127.0.0.1:8000/api/bookings/"
 ```
 
-If you want stricter access (e.g., only authenticated users can read tourist sites/hotels), I can update the viewsets' `permission_classes` accordingly.
-
 

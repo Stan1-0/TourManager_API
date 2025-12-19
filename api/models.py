@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from decimal import Decimal
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 # Create your models here.
@@ -39,6 +41,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+    @property
+    def is_staff(self):
+        """Compatibility property for Django admin: treat `is_admin` or `is_superuser` as staff."""
+        return bool(self.is_admin or self.is_superuser)
 
 class TouristSite(models.Model):
     name = models.CharField(max_length=255)
@@ -91,6 +98,17 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.hotel.name}"
+    
+    def save(self, *args, **kwargs):
+        # Automatically calculate total_cost based on number of nights and hotel's price_per_night
+        if self.check_in_date and self.check_out_date:
+            nights = (self.check_out_date - self.check_in_date).days
+            if nights <= 0:
+                raise ValidationError("`check_out_date` must be after `check_in_date`")
+            if self.hotel and self.hotel.price_per_night is not None:
+                # Ensure Decimal multiplication
+                self.total_cost = Decimal(self.hotel.price_per_night) * Decimal(nights)
+        super().save(*args, **kwargs)
     
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")

@@ -2,9 +2,17 @@ from .models import *
 from rest_framework import serializers
 
 class TouristSiteSerializer(serializers.ModelSerializer):
+    # include related hotels (read-only nested)
+    hotels = serializers.SerializerMethodField()
+
     class Meta:
         model = TouristSite
         fields = '__all__'
+
+    def get_hotels(self, obj):
+        from .models import Hotel
+        qs = obj.hotels.all()
+        return HotelSerializer(qs, many=True).data
         
 class HotelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,3 +62,4 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__'
+        read_only_fields = ('total_cost', 'user')

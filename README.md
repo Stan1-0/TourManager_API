@@ -179,9 +179,4 @@ curl -H "Authorization: Bearer $ADMIN_TOKEN" "http://127.0.0.1:8000/api/bookings
 
 If you want stricter access (e.g., only authenticated users can read tourist sites/hotels), I can update the viewsets' `permission_classes` accordingly.
 
-## Notes & Next steps
 
-- To support writable nested hotel creation via `TouristSiteSerializer`, implement `create()`/`update()` handling in the serializer and validate duplicates.
-- Consider adding token-based authentication (DRF Simple JWT) for stateless API access.
-
-If you want, I can expand this documentation into a `docs/` folder with OpenAPI/Swagger examples and sample Postman collections.
